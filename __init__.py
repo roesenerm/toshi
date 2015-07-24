@@ -55,20 +55,6 @@ def login():
 		username = request.form['username']
 		brainwallet_password = request.form['brainwallet_password']
 
-		'''
-
-		if accounts.find_one({'username':username}) == None:
-
-			error = 'Invalid Credentials. Please try again.'
-
-		else:
-			session['logged_in'] = True
-			session['username'] = username
-
-			return redirect(url_for('explore'))
-
-		'''
-
 		if accounts.find_one({'username':username}) == None:
 
 			error = 'Invalid Credentials. Please try again.'
@@ -113,21 +99,6 @@ def signup():
 			session['username'] = username
 
 		return redirect(url_for('explore'))
-
-	'''
-
-	if account_password == confirm_password:
-
-		my_address = create_account(brainwallet_password)
-
-		handle.accounts.insert({'username':username, 'acccount_password':account_password, 'my_address':my_address})
-
-		session['logged_in'] = True
-		session['username'] = username
-
-		return redirect(url_for('explore'))
-
-	'''
 
 	return render_template('signup.html', error=error)
 
@@ -186,7 +157,7 @@ def recieve_token():
 def home():
 	auth_url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id='+ CLIENT_ID +'&redirect_uri='+ YOUR_CALLBACK_URL
 
-	return render_template("cover2.html", auth_url=auth_url)
+	return render_template("cover.html", auth_url=auth_url)
 
 
 @app.route('/explore', methods=['GET', 'POST'])
@@ -524,8 +495,6 @@ def sign_tx(tx_hex, tx_key):
 
 def broadcast_tx(signed_tx):
 
-	#pdb.set_trace()
-
 	payload = { 'txHex':signed_tx }
 
 	r = requests.post('http://testnet.api.coloredcoins.org:80/v2/broadcast', data=json.dumps(payload), headers={'Content-Type':'application/json'})
@@ -615,8 +584,8 @@ def metadata(asset_id):
 
 
 if __name__ == '__main__':
-	#port = int(os.environ.get('PORT', 5000))
-	#app.run(host='0.0.0.0', port=port)
-	app.run(debug=True)
+	port = int(os.environ.get('PORT', 5000))
+	app.run(host='0.0.0.0', port=port)
+	#app.run(debug=True)
 
 

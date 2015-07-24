@@ -458,7 +458,7 @@ def issue():
 
 		if str(r) == '<Response [200]>':
 
-			tx_hex = response['txHex']
+			tx_hex = str(response['txHex'])
 
 			asset_id = response['assetId']
 

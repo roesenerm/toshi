@@ -19,7 +19,7 @@ def connect():
 	return handle
 
 app = Flask(__name__)
-#app.secret_key = "temp secret"
+app.secret_key = "temp secret"
 
 handle = connect()
 
@@ -305,8 +305,6 @@ def transfer_asset(from_address, to_address, transfer_amount, asset_id, tx_key):
 
 def send_btc(send_to, ticket_price_satoshis, send_from, tx_key):
 
-	pdb.set_trace()
-
 	error = None
 	tx_id = None
 
@@ -584,8 +582,8 @@ def metadata(asset_id):
 
 
 if __name__ == '__main__':
-	port = int(os.environ.get('PORT', 5000))
-	app.run(host='0.0.0.0', port=port)
-	#app.run(debug=True)
+	#port = int(os.environ.get('PORT', 5000))
+	#app.run(host='0.0.0.0', port=port)
+	app.run(debug=True)
 
 

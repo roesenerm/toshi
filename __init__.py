@@ -378,7 +378,7 @@ def transfer():
 
 		if r.status_code == 200:
 
-			tx_hex = response['txHex']
+			tx_hex = str(response['txHex'])
 
 			tx_key = private_key
 

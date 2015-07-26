@@ -228,9 +228,9 @@ def explore():
 
 		asset_tx_id, btc_tx_id, error = swap(my_address=my_address, ticket_price=ticket_price, from_address=from_address, asset_id=asset_id, transfer_amount=transfer_amount, issuer_private_key=issuer_private_key, buyer_private_key=buyer_private_key)
 
-		if asset_tx_id == True and btc_tx_id == True:
+		if error == None:
 
-			return render_template("buy.html", asset_tx_id=asset_tx_id, btc_tx_id=btc_tx_id, error=error)
+			return render_template("buy.html", asset_tx_id=asset_tx_id, btc_tx_id=btc_tx_id)
 
 
 	return render_template("explore.html", posts=posts, meta_data=meta_data, error=error)

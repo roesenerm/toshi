@@ -294,9 +294,15 @@ def transfer_asset(from_address, to_address, transfer_amount, asset_id, tx_key):
 
 			tx_hex = response['txHex']
 
+			print (tx_hex)
+
 			signed_tx = sign_tx(tx_hex, tx_key)
 
+			print (signed_tx)
+
 			tx_id = broadcast_tx(signed_tx)
+
+			print (tx_id)
 
 		except:
 

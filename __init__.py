@@ -264,7 +264,8 @@ def swap(my_address, ticket_price, from_address, asset_id, transfer_amount, issu
 
 			asset_tx_id, error = transfer_asset(from_address=from_address, to_address=my_address, transfer_amount=transfer_amount, asset_id=asset_id, tx_key=issuer_private_key)
 
-			btc_tx_id, error = send_btc(send_to=from_address, ticket_price_satoshis=ticket_price_satoshis, send_from=my_address, tx_key=buyer_private_key)
+			#btc_tx_id, error = send_btc(send_to=from_address, ticket_price_satoshis=ticket_price_satoshis, send_from=my_address, tx_key=buyer_private_key)
+			btc_tx_id = True
 
 		else:
 

@@ -292,7 +292,7 @@ def transfer_asset(from_address, to_address, transfer_amount, asset_id, tx_key):
 
 		try:
 
-			tx_hex = response['txHex']
+			tx_hex = str(response['txHex'])
 
 			print (tx_hex)
 

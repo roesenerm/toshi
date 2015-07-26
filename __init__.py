@@ -296,6 +296,8 @@ def transfer_asset(from_address, to_address, transfer_amount, asset_id, tx_key):
 
 			print (tx_hex)
 
+			print (tx_key)
+
 			signed_tx = sign_tx(tx_hex, tx_key)
 
 			print (signed_tx)
@@ -487,6 +489,8 @@ def issue():
 def sign_tx(tx_hex, tx_key):
 
 	tx_structure = deserialize(tx_hex)
+
+	print (tx_structure)
 
 	for i in range(0, len(tx_structure['ins'])):
 

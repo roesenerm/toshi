@@ -355,6 +355,7 @@ def get_address_balance(address):
 @app.route('/transfer', methods=['GET', 'POST'])
 @login_required
 def transfer():
+	username = session['username']
 
 	error = None
 
@@ -368,32 +369,40 @@ def transfer():
 
 		to_address = str(request.form['to_bitcoin_address'])
 
-		private_key = str(request.form['private_key'])
+		passphrase = str(request.form['private_key'])
 
-		payload = {'fee': 1000, 'from': from_address, 'to':[{'address':to_address,'amount': transfer_amount, 'assetId' : asset_id}]}
+		if sha256_crypt.verify(str(passphrase), str(accounts.find_one({'username':username})['password'])) == False:
 
-		r = requests.post('http://testnet.api.coloredcoins.org:80/v2/sendasset', data=json.dumps(payload), headers={'Content-Type':'application/json'})
-
-		response = r.json()
-
-		if r.status_code == 200:
-
-			tx_hex = str(response['txHex'])
-
-			tx_key = private_key
-
-			signed_tx = sign_tx(tx_hex, tx_key)
-
-			tx_id = broadcast_tx(signed_tx)
-
-			return render_template("transfer_asset.html", tx_id=tx_id)
+			error = 'Invalid Private Passphrase. Please try again.'
 
 		else:
-			error = "Error transferring asset"
 
-			return render_template("transfer_asset.html", from_address=from_address, asset_id=asset_id, transfer_amount=transfer_amount, to_address=to_address, error=error)
+			private_key = accounts.find_one({'username':username})['priv']
 
-	return render_template("transfer.html", posts=posts)
+			payload = {'fee': 1000, 'from': from_address, 'to':[{'address':to_address,'amount': transfer_amount, 'assetId' : asset_id}]}
+
+			r = requests.post('http://testnet.api.coloredcoins.org:80/v2/sendasset', data=json.dumps(payload), headers={'Content-Type':'application/json'})
+
+			response = r.json()
+
+			if r.status_code == 200:
+
+				tx_hex = str(response['txHex'])
+
+				tx_key = private_key
+
+				signed_tx = sign_tx(tx_hex, tx_key)
+
+				tx_id = broadcast_tx(signed_tx)
+
+				return render_template("transfer_asset.html", tx_id=tx_id)
+
+			else:
+				error = "Error transferring asset"
+
+				return render_template("transfer_asset.html", from_address=from_address, asset_id=asset_id, transfer_amount=transfer_amount, to_address=to_address, error=error)
+
+	return render_template("transfer.html", posts=posts, error=error)
 
 #Profile Page
 @app.route('/profile', methods=['GET', 'POST'])
@@ -463,24 +472,32 @@ def issue():
 
 		response = r.json()
 
-		tx_key = request.form['private_key']
+		passphrase = request.form['private_key']
 
-		if str(r) == '<Response [200]>':
+		if sha256_crypt.verify(str(passphrase), str(accounts.find_one({'username':username})['password'])) == False:
 
-			tx_hex = str(response['txHex'])
-
-			asset_id = response['assetId']
-
-			signed_tx = sign_tx(tx_hex, tx_key)
-
-			tx_id = broadcast_tx(signed_tx)
-
-			posts.insert({'bitcoin_address':my_address, 'asset_id':asset_id, 'tx_id':tx_id})
-
-			return render_template("issuance.html", name=name, image=image, ticket_price=ticket_price, description=description, issued_amount=issued_amount)
+			error = 'Invalid Private Passphrase. Please try again.'
 
 		else:
-			error = "Error issuing ticket, not enough funds to cover issue."
+
+			tx_key = accounts.find_one({'username':username})['priv']
+
+			if str(r) == '<Response [200]>':
+
+				tx_hex = str(response['txHex'])
+
+				asset_id = response['assetId']
+
+				signed_tx = sign_tx(tx_hex, tx_key)
+
+				tx_id = broadcast_tx(signed_tx)
+
+				posts.insert({'bitcoin_address':my_address, 'asset_id':asset_id, 'tx_id':tx_id})
+
+				return render_template("issuance.html", name=name, image=image, ticket_price=ticket_price, description=description, issued_amount=issued_amount)
+
+			else:
+				error = "Error issuing ticket, not enough funds to cover issue."
 
 
 	return render_template("issue.html", error=error)

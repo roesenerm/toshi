@@ -183,7 +183,7 @@ def explore():
 		asset_id = post['asset_id']
 		tx_id = post['tx_id']
 
-		for index in range(0,10):
+		for index in range(0,5):
 
 			utxo = tx_id + ':' + str(index)
 
@@ -575,35 +575,46 @@ def check_ticket():
 	return render_template("check_ticket.html")
 
 
-@app.route('/ticket_id/<asset_id>')
+@app.route('/<asset_id>')
 #@login_required
-def metadata(asset_id):
+def ticket_id(asset_id):
+	error = None
+	name = None
+	description = None
 
 	if posts.find_one({'asset_id':asset_id}) == None:
 
 		error = "No Asset ID Found"
 
-		return render_template("ticket.html", asset_id=asset_id, name=name, description=description, error=error)
-
 	else:
 
 		data = posts.find_one({'asset_id':asset_id})
 
-		asset_id = asset_id
-
 		tx_id = data['tx_id']
 
-		utxo = tx_id + ":1"
+		for index in range(0,5):
 
-		r = requests.get('http://testnet.api.coloredcoins.org:80/v2/assetmetadata/' + asset_id + '/' + utxo)
+			utxo = tx_id + ':' + str(index)
 
-		response = r.json()
+			endpoint = 'http://testnet.api.coloredcoins.org:80/v2/assetmetadata/' + asset_id + '/' + utxo
 
-		asset_id = response['assetId']
-		name = response['metadataOfIssuence']['name']
-		description = response['metadataOfIssuence']['description']
+			r = requests.get(endpoint)
 
-		return render_template("ticket.html", asset_id=asset_id, name=name, description=description, error=error)
+			if (r.status_code) != 200:
+				pass
+
+			else:
+
+				response = r.json()
+
+				asset_id = response['assetId']
+				bitcoin_address = response['issueAddress']
+				name = response['metadataOfIssuence']['data']['userData']['meta'][1]['Name']
+				description = response['metadataOfIssuence']['data']['userData']['meta'][2]['Description']
+				price = response['metadataOfIssuence']['data']['userData']['meta'][3]['Price']
+				image = response['metadataOfIssuence']['data']['userData']['meta'][4]['Image']
+
+	return render_template("ticket.html", asset_id=asset_id, bitcoin_address=bitcoin_address, name=name, description=description, image=image, price=price, error=error)
 
 
 

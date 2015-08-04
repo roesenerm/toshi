@@ -13,8 +13,11 @@
     <center>
     <div class = "container">
       <h1>Check Ticket Details</h1>
+      <h3>Issuer Address: {{ bitcoin_address }}</h3>
       <h3>Asset ID: {{ asset_id }}</h3>
-      <h3>Name: {{ name }}</h3>
+      <h3>{{ name }}</h3>
+      <img src= {{ image }} alt="color qrcode" height="300" width="300">
+      <h3>Price: ${{ price }}</h3>
       <h3>Description: {{ description }}</h3>
       <br>
       {% if error %}
@@ -25,3 +28,5 @@
 </body>
 
 {% endblock %}
+
+

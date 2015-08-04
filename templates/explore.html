@@ -22,12 +22,9 @@
               <div class="panel-body">
                 <h3>{{ meta.name }}</h3>
                 <br>
-                <img src= {{ meta.image }} alt="color qrcode" height="200" width="200">
+                <a href="/{{meta.asset_id}}"><img src= {{ meta.image }} alt="color qrcode" height="200" width="200"></a>
                 <br>
-                <br>
-                <p>Ticket Owner: {{ meta.bitcoin_address }}</p>
-                <p>Ticket ID: {{ meta.asset_id }}</p>
-                <!-- <a href="/ticket_id/{{meta.asset_id}}">{{ meta.asset_id }}</a> -->
+                <!--<p>Ticket Owner: {{ meta.bitcoin_address }}</p>-->
                 <form class="form-horizontal" action="" method="post">
                     <p><input type="hidden" placeholder="Bitcoin Address" name="bitcoin_address" value={{ meta.bitcoin_address }}></p>
                     <p><input type="hidden" placeholder="Asset ID" name="asset_id" value={{ meta.asset_id }}></p>
@@ -36,6 +33,7 @@
                     <p><input type="number" MIN="0" MAX="10" STEP="1" VALUE="1" SIZE="1" placeholder="Number of Tickets" name="transfer_amount" value="{{request.form.transfer_amount}}"></p>
                     <p><input class="btn btn-custom" type="submit" value="Buy"></p>
                 </form>
+                <!--<p>Ticket ID: <a href="/{{meta.asset_id}}">{{ meta.asset_id }}</a></p>-->
               </div>
               {% if error %}
                 <p class="error"><strong>Error:</strong> {{ error }}</p>

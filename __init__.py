@@ -575,12 +575,20 @@ def check_ticket():
 	return render_template("check_ticket.html")
 
 
-@app.route('/<asset_id>')
+@app.route('/<asset_id>', methods=['GET', 'POST'])
 #@login_required
 def ticket_id(asset_id):
 	error = None
 	name = None
 	description = None
+
+	username = session['username']
+
+	session_user = accounts.find_one({'username':username})
+
+	my_address = session_user['my_address']
+
+	buyer_private_key = session_user['priv']
 
 	if posts.find_one({'asset_id':asset_id}) == None:
 
@@ -613,6 +621,29 @@ def ticket_id(asset_id):
 				description = response['metadataOfIssuence']['data']['userData']['meta'][2]['Description']
 				price = response['metadataOfIssuence']['data']['userData']['meta'][3]['Price']
 				image = response['metadataOfIssuence']['data']['userData']['meta'][4]['Image']
+
+		if request.method == 'POST':
+
+			asset_tx_id = None
+			btc_tx_id = None
+
+			from_address = str(request.form['bitcoin_address'])
+
+			asset_id = str(request.form['asset_id'])
+
+			ticket_price = str(request.form['ticket_price'])
+
+			transfer_amount = int(request.form['transfer_amount'])
+
+			issuer = accounts.find_one({'my_address':from_address})
+
+			issuer_private_key = issuer['priv']
+
+			asset_tx_id, btc_tx_id, error = swap(my_address=my_address, ticket_price=ticket_price, from_address=from_address, asset_id=asset_id, transfer_amount=transfer_amount, issuer_private_key=issuer_private_key, buyer_private_key=buyer_private_key)
+
+			if error == None:
+
+				return render_template("buy.html", asset_tx_id=asset_tx_id, btc_tx_id=btc_tx_id)
 
 	return render_template("ticket.html", asset_id=asset_id, bitcoin_address=bitcoin_address, name=name, description=description, image=image, price=price, error=error)
 
